@@ -2,7 +2,7 @@
 
 ![choruspedal](https://github.com/joeloftusdev/chorus-cmajor/assets/152509645/20b6d5aa-da65-4d9b-aba1-8f4e9d260e63) 
 
-Simple stereo chorus effect made with [Cmajor](https://cmajor.dev/) 
+A Simple stereo chorus effect made with [Cmajor](https://cmajor.dev/) 
 
 ## How to Run
 
