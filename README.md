@@ -10,4 +10,4 @@ Examples of how to build & run can be found [here.](https://cmajor.dev/docs/Gett
 
 ## Credit
 
-* GUI: [Cmajor Tremolo](https://github.com/cmajor-lang/cmajor/tree/main/examples/patches/Tremolo) 
+* GUI: [Tremolo](https://cmajor.dev/docs/Examples/Tremolo/) 
