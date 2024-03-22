@@ -1,0 +1,27 @@
+{
+    "CmajorVersion":    1,
+    "ID":               "dev.cmajor.chorus",
+    "version":          "1.0",
+    "name":             "Chorus",
+    "description":      "A chorus effect, with a GUI",
+    "category":         "effect",
+    "manufacturer":     "JL Dev",
+    "isInstrument":     false,
+
+    "plugin":
+    {
+        "manufacturerCode":  "jldev",
+        "pluginCode":        "ce-2"
+    },
+
+    "source":           [ "chorus.cmajor" ],
+    "view":
+    {
+        "src": "ui/index.js",
+        "width": 250,
+        "height": 423,
+        "resizable": false
+    }
+
+    
+}

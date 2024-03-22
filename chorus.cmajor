@@ -1,0 +1,172 @@
+graph Chorus [[ main ]]
+{
+    //input value bool bypass [[ name: "Bypass", boolean ]];
+    input stream float in;
+    output stream float<2> out;
+   
+
+    input value float rate  [[ name: "Rate", min: 0.01,  max: 40.0,   init: 0.5, step: 0.01 ]];
+    input value float depth [[ name: "Depth", min: 0.0,   max: 50.0,  init: 25.0, slewRate: 3000.0 ]];
+    input value float shape [[ name: "Shape", min: 0.0,   max: 1.0,    init: 0.0 ]];
+
+    const float dry = 50.0;
+    const float wet = 70.0;
+    const float delayTime = 1.0;
+
+    node mix = DryWetMix;
+    node chorus1 = ChorusProcessor (0.0f, -1.0f);
+    node chorus2 = ChorusProcessor (0.5f,  1.0f);
+  
+
+ 
+    connection
+    {
+        dry -> mix.dry;
+        wet -> mix.wet;
+        rate  -> chorus1.rate, chorus2.rate;
+        depth -> chorus1.depth, chorus2.depth;
+        shape -> chorus1.shape, chorus2.shape;
+        delayTime -> chorus1.delayTime, chorus2.delayTime;
+        in -> mix.dryIn;
+        in -> chorus1.in, chorus2.in;
+        in -> mix.dryIn;
+        chorus1.out  -> mix.wetIn;
+        chorus2.out  -> mix.wetIn;
+        mix.out  -> out; 
+    }
+
+}
+
+processor Oscillator (float initialPhase)
+{
+    input stream float rate  [[ name: "Rate", min: 0.1, max:1000.0, init: 2.0, step: 0.1 ]];
+    input stream float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
+    input stream float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Sine|Triangle"]];
+
+    output stream float out;
+
+    bool isSine (float shape)
+    {
+        return shape < 0.5f;
+    }
+    float getSine (float phase)
+    {
+        return sin (phase * float (twoPi));
+    }
+
+    float getTriangleVal (float phase) 
+    {
+        return (phase < 0.5f) ? -1.0f + (phase * 4.0f) : 1.0f - ((phase - 0.5f) * 4.0f);
+    }
+
+    void main()
+    {
+        float phase = initialPhase;
+
+        loop
+        {
+            let value = isSine (shape) ? getSine (phase) : getTriangleVal (phase);
+
+            out <- depth * 0.01f * value;
+
+            phase = fmod (phase + rate * float (processor.period), 1.0f);
+            advance();
+        }
+    }
+}
+
+graph ChorusProcessor (float initialPhase, float pan)
+{
+    input value float rate  [[ name: "Rate", min: 0.1, max:20.0, init: 2.0, step: 0.1 ]];
+    input value float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
+    input value float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Sine|Triangle"]];
+    input value float delayTime;
+
+    input stream float in;
+    output stream float<2> out;
+
+    node   osc = Oscillator(initialPhase);
+    node   panner = StereoPan(pan);
+    node   delay  = Delay;
+
+    connection
+    {        
+        rate  -> osc.rate;
+        depth -> osc.depth;
+        shape -> osc.shape;
+        delayTime -> delay.delayTime;
+        in -> delay.in;
+        osc.out -> delay.modIn;
+        delay.out -> panner.in;
+        panner.out -> out;
+    }
+}
+
+
+
+processor StereoPan (float pan)
+{
+    input stream float in;
+    output stream float<2> out;
+
+    void main()
+    {
+        let l = (1 - pan) / 2.0f;
+        let r = 1.0f - l;
+
+        loop
+        {
+            out <- float<2> (l * in, r * in);
+            advance();
+        }
+    }
+}
+
+processor Delay 
+{
+    input stream float delayTime;
+
+    input stream float in, modIn;
+    output stream float out;
+
+    float[10000] buf;
+
+    void main()
+    {
+        let samplesPerMs = float (processor.frequency / 1000.0);
+
+        wrap<buf.size> writePos;
+
+        loop
+        {
+            let delayMs = delayTime * samplesPerMs * (1.0f + modIn) + 1.0f;
+            let delayedVal = readLinearInterpolated (buf, float(writePos) - delayMs);
+            buf[writePos] = in;
+
+            out <- delayedVal;
+            writePos++;
+            advance();
+        }
+    }
+}
+
+processor DryWetMix
+{
+    input value float dry;
+    input value   float wet;
+    
+    input stream float dryIn;
+    input stream float<2> wetIn;
+
+    output stream float<2> out;
+
+    void main()
+    {
+        loop
+        {
+            out <- (dry * 0.01f * dryIn) + (wet * 0.01f * wetIn);
+            advance();
+        }
+    }
+}
+
