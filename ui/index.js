@@ -33,7 +33,7 @@ export default function createPatchView (patchConnection)
         };
 
         const view = createView ({
-            // bypass: toParameter ("bypass"),
+          bypass: toParameter ("bypass"),
             rate: toParameter ("rate"),
             wave: toParameter ("shape"),
             depth: toParameter ("depth"),

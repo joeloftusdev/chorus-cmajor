@@ -18,7 +18,7 @@
 
 /**
  * @param {Object} parameters
- * @param {Parameter} parameters.bypass 
+ * 
  * @param {Parameter} parameters.rate 
  * @param {Parameter} parameters.shape 
  * @param {Parameter} parameters.depth 
@@ -55,7 +55,7 @@ class PatchView extends HTMLElement
             });
         };
 
-        const setupSwitch = (config)  =>
+       const setupSwitch = (config)  =>
         {
             const ledElement = shadow.getElementById ("power-led");
 
@@ -78,6 +78,7 @@ class PatchView extends HTMLElement
 
             return (nextValue) => update (toBool (nextValue));
         };
+
 
         this.connectedCallbackImpl = () =>
         {

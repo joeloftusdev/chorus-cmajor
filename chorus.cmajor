@@ -1,6 +1,6 @@
 graph Chorus [[ main ]]
 {
-    //input value bool bypass [[ name: "Bypass", boolean ]];
+    input value bool bypass [[ name: "Bypass", boolean ]];
     input stream float in;
     output stream float<2> out;
    
@@ -21,6 +21,7 @@ graph Chorus [[ main ]]
  
     connection
     {
+        
         dry -> mix.dry;
         wet -> mix.wet;
         rate  -> chorus1.rate, chorus2.rate;
@@ -32,9 +33,39 @@ graph Chorus [[ main ]]
         in -> mix.dryIn;
         chorus1.out  -> mix.wetIn;
         chorus2.out  -> mix.wetIn;
+        bypass -> mix.bypass;
         mix.out  -> out; 
+    
     }
 
+}
+
+
+graph ChorusProcessor (float initialPhase, float pan)
+{
+    input value float rate  [[ name: "Rate", min: 0.1, max:20.0, init: 2.0, step: 0.1 ]];
+    input value float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
+    input value float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Sine|Triangle"]];
+    input value float delayTime;
+
+    input stream float in;
+    output stream float<2> out;
+
+    node   osc = Oscillator(initialPhase);
+    node   panner = StereoPan(pan);
+    node   delay  = Delay;
+
+    connection
+    {        
+        rate  -> osc.rate;
+        depth -> osc.depth;
+        shape -> osc.shape;
+        delayTime -> delay.delayTime;
+        in -> delay.in;
+        osc.out -> delay.modIn;
+        delay.out -> panner.in;
+        panner.out -> out;
+    }
 }
 
 processor Oscillator (float initialPhase)
@@ -74,35 +105,6 @@ processor Oscillator (float initialPhase)
         }
     }
 }
-
-graph ChorusProcessor (float initialPhase, float pan)
-{
-    input value float rate  [[ name: "Rate", min: 0.1, max:20.0, init: 2.0, step: 0.1 ]];
-    input value float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
-    input value float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Sine|Triangle"]];
-    input value float delayTime;
-
-    input stream float in;
-    output stream float<2> out;
-
-    node   osc = Oscillator(initialPhase);
-    node   panner = StereoPan(pan);
-    node   delay  = Delay;
-
-    connection
-    {        
-        rate  -> osc.rate;
-        depth -> osc.depth;
-        shape -> osc.shape;
-        delayTime -> delay.delayTime;
-        in -> delay.in;
-        osc.out -> delay.modIn;
-        delay.out -> panner.in;
-        panner.out -> out;
-    }
-}
-
-
 
 processor StereoPan (float pan)
 {
@@ -154,6 +156,8 @@ processor DryWetMix
 {
     input value float dry;
     input value   float wet;
+    input value bool bypass [[ name: "Bypass", boolean ]];
+    
     
     input stream float dryIn;
     input stream float<2> wetIn;
@@ -164,7 +168,7 @@ processor DryWetMix
     {
         loop
         {
-            out <- (dry * 0.01f * dryIn) + (wet * 0.01f * wetIn);
+            out <- bypass ? float<2>(dryIn, dryIn) : (dry * 0.01f * dryIn) + (wet * 0.01f * wetIn);
             advance();
         }
     }
