@@ -1,6 +1,6 @@
 {
     "CmajorVersion":    1,
-    "ID":               "dev.cmajor.chorus",
+    "ID":               "net.joeloftus.chorus",
     "version":          "1.0",
     "name":             "Chorus",
     "description":      "A chorus effect, with a GUI",

@@ -6,7 +6,7 @@ graph Chorus [[ main ]]
    
 
     input value float rate  [[ name: "Rate", min: 0.01,  max: 40.0,   init: 0.5, step: 0.01 ]];
-    input value float depth [[ name: "Depth", min: 0.0,   max: 50.0,  init: 25.0, slewRate: 3000.0 ]];
+    input value float depth [[ name: "Depth", min: 0.0,   max: 50.0,  init: 25.0, slew: 3000.0 ]];
     input value float shape [[ name: "Shape", min: 0.0,   max: 1.0,    init: 0.0 ]];
 
     const float dry = 50.0;
@@ -43,7 +43,7 @@ graph Chorus [[ main ]]
 
 graph ChorusProcessor (float initialPhase, float pan)
 {
-    input value float rate  [[ name: "Rate", min: 0.1, max:20.0, init: 2.0, step: 0.1 ]];
+    input value float rate  [[ name: "Rate", min: 0.1, max:30.0, init: 2.0, step: 0.1 ]];
     input value float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
     input value float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Waveshape"]];
     input value float delayTime;
@@ -70,7 +70,7 @@ graph ChorusProcessor (float initialPhase, float pan)
 
 processor Oscillator (float initialPhase)
 {
-    input stream float rate  [[ name: "Rate", min: 0.1, max:1000.0, init: 2.0, step: 0.1 ]];
+    input stream float rate  [[ name: "Rate", min: 0.1, max:800.0, init: 2.0, step: 0.1 ]];
     input stream float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
     input stream float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Waveshape"]];
 
