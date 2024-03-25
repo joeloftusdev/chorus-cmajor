@@ -1,53 +1,40 @@
 graph Chorus [[ main ]]
 {
     input value bool bypass [[ name: "Bypass", boolean ]];
+
     input stream float in;
     output stream float<2> out;
    
-
-    input value float rate  [[ name: "Rate", min: 0.01,  max: 40.0,   init: 0.5, step: 0.01 ]];
-    input value float depth [[ name: "Depth", min: 0.0,   max: 50.0,  init: 25.0, slew: 3000.0 ]];
+    input value float rate  [[ name: "Rate", min: 0.01,  max: 40.0,   init: 0.5]];
+    input value float depth [[ name: "Depth", min: 0.0,   max: 40.0,  init: 0.5]];
     input value float shape [[ name: "Shape", min: 0.0,   max: 1.0,    init: 0.0 ]];
-
-    const float dry = 50.0;
-    const float wet = 70.0;
-    const float delayTime = 1.0;
 
     node mix = DryWetMix;
     node chorus1 = ChorusProcessor (0.0f, -1.0f);
     node chorus2 = ChorusProcessor (0.5f,  1.0f);
   
-
- 
     connection
     {
         
-        dry -> mix.dry;
-        wet -> mix.wet;
-        rate  -> chorus1.rate, chorus2.rate;
-        depth -> chorus1.depth, chorus2.depth;
-        shape -> chorus1.shape, chorus2.shape;
-        delayTime -> chorus1.delayTime, chorus2.delayTime;
-        in -> mix.dryIn;
-        in -> chorus1.in, chorus2.in;
-        in -> mix.dryIn;
-        chorus1.out  -> mix.wetIn;
-        chorus2.out  -> mix.wetIn;
-        bypass -> mix.bypass;
-        mix.out  -> out; 
+    rate  -> chorus1.rate, chorus2.rate;
+    depth -> chorus1.depth, chorus2.depth;
+    shape -> chorus1.shape, chorus2.shape;
+    in -> mix.dryIn;
+    in -> chorus1.in, chorus2.in;
+    chorus1.out  -> mix.wetIn;
+    chorus2.out  -> mix.wetIn;
+    bypass -> mix.bypass;
+    mix.out  -> out; 
     
     }
-
 }
-
 
 graph ChorusProcessor (float initialPhase, float pan)
 {
-    input value float rate  [[ name: "Rate", min: 0.1, max:30.0, init: 2.0, step: 0.1 ]];
-    input value float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
-    input value float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Waveshape"]];
-    input value float delayTime;
-
+    input value float rate;
+    input value float depth;
+    input value float shape;
+    
     input stream float in;
     output stream float<2> out;
 
@@ -57,22 +44,21 @@ graph ChorusProcessor (float initialPhase, float pan)
 
     connection
     {        
-        rate  -> osc.rate;
-        depth -> osc.depth;
-        shape -> osc.shape;
-        delayTime -> delay.delayTime;
-        in -> delay.in;
-        osc.out -> delay.modIn;
-        delay.out -> panner.in;
-        panner.out -> out;
+    rate  -> osc.rate;
+    depth -> osc.depth;
+    shape -> osc.shape;
+    in -> delay.in;
+    osc.out -> delay.modIn;
+    delay.out -> panner.in;
+    panner.out -> out;
     }
 }
 
 processor Oscillator (float initialPhase)
 {
-    input stream float rate  [[ name: "Rate", min: 0.1, max:800.0, init: 2.0, step: 0.1 ]];
-    input stream float depth [[ name: "Depth", min: 0.0, max:100.0, init: 50.0 ]];
-    input stream float shape [[ name: "Shape", min: 0, max:1, init:0, text: "Waveshape"]];
+    input stream float rate;
+    input stream float depth;
+    input stream float shape;
 
     output stream float out;
 
@@ -110,12 +96,12 @@ processor StereoPan (float pan)
 
 processor Delay 
 {
-    input stream float delayTime;
-
+   
     input stream float in, modIn;
     output stream float out;
 
-    float[10000] buf;
+    const float delayTime = 1.0;
+    float[48] buf;
 
     void main()
     {
@@ -138,15 +124,15 @@ processor Delay
 
 processor DryWetMix
 {
-    input value float dry;
-    input value float wet;
-    input value bool bypass [[ name: "Bypass", boolean ]];
-    
-    
+    input value bool bypass;
+       
     input stream float dryIn;
     input stream float<2> wetIn;
 
     output stream float<2> out;
+
+    const float dry = 50.0; 
+    const float wet = 100.0; 
 
     void main()
     {
