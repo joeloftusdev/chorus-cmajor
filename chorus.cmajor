@@ -10,6 +10,7 @@ graph Chorus [[ main ]]
     input value float shape [[ name: "Shape", min: 0.0,   max: 1.0,    init: 0.0 ]];
 
     node mix = std::mixers::Interpolator(float<2>, 80.0f);
+    node monoToStereo = std::mixers::MonoToStereo(float);
     node chorus1 = ChorusProcessor (0.0f, -1.0f);
     node chorus2 = ChorusProcessor (0.5f,  1.0f);
   
@@ -19,7 +20,8 @@ graph Chorus [[ main ]]
     rate  -> chorus1.rate, chorus2.rate;
     depth -> chorus1.depth, chorus2.depth;
     shape -> chorus1.shape, chorus2.shape;
-    float<2>(in, in) -> mix.in1;
+    in -> monoToStereo.in;
+    monoToStereo.out -> mix.in1;
     in -> chorus1.in, chorus2.in;
     chorus1.out, chorus2.out -> mix.in2;
     bypass ? 0.0f : 100.0f -> mix.mix;
@@ -110,7 +112,7 @@ processor Delay
         loop
         {
             let delayMs = delayTime * samplesPerMs * (1.0f + modIn) + 1.0f;
-            let delayedVal = readLinearInterpolated (buf, float(writePos) - delayMs);
+            let delayedVal = readLinearInterpolated(buf, float(writePos) - delayMs);
             buf[writePos] = in;
 
             out <- delayedVal;
