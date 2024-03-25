@@ -12,4 +12,5 @@ If you're using VSCode just install the Cmajor extension & you are good to go.
 
 ## Credit
 
-* [Tremolo](https://cmajor.dev/docs/Examples/Tremolo/) 
+
+* UI styling came from [Tremolo](https://cmajor.dev/docs/Examples/Tremolo/) in the Cmajor Examples.
