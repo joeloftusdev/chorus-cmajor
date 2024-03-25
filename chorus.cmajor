@@ -5,11 +5,11 @@ graph Chorus [[ main ]]
     input stream float in;
     output stream float<2> out;
    
-    input value float rate  [[ name: "Rate", min: 0.01,  max: 40.0,   init: 0.5]];
-    input value float depth [[ name: "Depth", min: 0.0,   max: 40.0,  init: 0.5]];
+    input value float rate  [[ name: "Rate", min: 0.01,  max: 20.0,   init: 0.5]];
+    input value float depth [[ name: "Depth", min: 0.0,   max: 20.0,  init: 0.5]];
     input value float shape [[ name: "Shape", min: 0.0,   max: 1.0,    init: 0.0 ]];
 
-    node mix = DryWetMix;
+    node mix = std::mixers::Interpolator(float<2>, 80.0f);
     node chorus1 = ChorusProcessor (0.0f, -1.0f);
     node chorus2 = ChorusProcessor (0.5f,  1.0f);
   
@@ -19,12 +19,11 @@ graph Chorus [[ main ]]
     rate  -> chorus1.rate, chorus2.rate;
     depth -> chorus1.depth, chorus2.depth;
     shape -> chorus1.shape, chorus2.shape;
-    in -> mix.dryIn;
+    float<2>(in, in) -> mix.in1;
     in -> chorus1.in, chorus2.in;
-    chorus1.out  -> mix.wetIn;
-    chorus2.out  -> mix.wetIn;
-    bypass -> mix.bypass;
-    mix.out  -> out; 
+    chorus1.out, chorus2.out -> mix.in2;
+    bypass ? 0.0f : 100.0f -> mix.mix;
+    mix.out -> out; 
     
     }
 }
@@ -106,7 +105,6 @@ processor Delay
     void main()
     {
         let samplesPerMs = float (processor.frequency / 1000.0);
-
         wrap<buf.size> writePos;
 
         loop
@@ -122,25 +120,4 @@ processor Delay
     }
 }
 
-processor DryWetMix
-{
-    input value bool bypass;
-       
-    input stream float dryIn;
-    input stream float<2> wetIn;
-
-    output stream float<2> out;
-
-    const float dry = 50.0; 
-    const float wet = 100.0; 
-
-    void main()
-    {
-        loop
-        {
-            out <- bypass ? float<2>(dryIn, dryIn) : (dry * 0.01f * dryIn) + (wet * 0.01f * wetIn);
-            advance();
-        }
-    }
-}
 
