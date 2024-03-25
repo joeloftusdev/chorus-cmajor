@@ -84,12 +84,11 @@ processor StereoPan (float pan)
 
     void main()
     {
-        let l = (1 - pan) / 2.0f;
-        let r = 1.0f - l;
+       let gains = std::pan_law::linear(pan);
 
         loop
         {
-            out <- float<2> (l * in, r * in);
+            out <- gains * float<2>(in, in);
             advance();
         }
     }
