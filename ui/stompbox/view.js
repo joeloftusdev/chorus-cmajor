@@ -28,14 +28,13 @@
  */
 export function createView (parameters, options)
 {
-    const customElementName = "cmaj-adc-2023-tremolo-view";
+    const customElementName = "stereo-chorus-view";
 
     if (! window.customElements.get (customElementName))
         window.customElements.define (customElementName, PatchView);
 
     return new PatchView (parameters, options);
 }
-
 
 class PatchView extends HTMLElement
 {
@@ -57,12 +56,15 @@ class PatchView extends HTMLElement
 
        const setupSwitch = (config)  =>
         {
+            const switchElement = shadow.getElementById ("stomp-switch");
             const ledElement = shadow.getElementById ("power-led");
 
             const setLedActive = (active) =>
             {
                 ledElement.classList.remove (! active ? "led-on" : "led-off");
                 ledElement.classList.add (active ? "led-on" : "led-off");
+                switchElement.classList.remove(active ? "footsw-off" : "footsw-on");
+                switchElement.classList.add(active ? "footsw-on" : "footsw-off");
             };
 
             const negateArgument = (fn) => (value) => fn (! value);
@@ -138,24 +140,32 @@ function getHTML()
 }
 
 .enclosure-png {
-    width: 250px;
+    width: 500px;
     height: 423px;
 
     background-image: url(${resolvePath ("./enclosure.png")});
 }
 
-.big-knob-svg {
+.knob-svg {
     width: 68px;
     height: 68px;
 
-    background-image: url(${resolvePath ("./big-knob-flat.svg")});
+    background-image: url(${resolvePath ("./knob.svg")});
 }
 
-.smaller-knob-svg {
+
+.footsw-on{
     width: 48px;
     height: 48px;
 
-    background-image: url(${resolvePath ("./smaller-knob-flat.svg")});
+    background-image: url(${resolvePath ("./footsw-on.png")});
+}
+
+.footsw-off{
+    width: 48px;
+    height: 48px;
+
+    background-image: url(${resolvePath ("./footsw-off.png")});
 }
 
 .controls {
@@ -170,46 +180,34 @@ function getHTML()
     height: 100%;
 }
 
-.rectangular-button-svg {
-    width: 216px;
-    height: 145px;
-
-    background-image: url(${resolvePath ("./button.svg")});
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 #power-led {
     position: absolute;
-    left: 110px;
-    top: 20px;
+    left: 230px;
+    top: 240px;
+}
+
+#stomp-switch {
+    position: absolute;
+    left: 210px;
+    top: 260px;
 }
 
 #knob-rate {
     position: absolute;
-    top: 5px;
+    top: 60px;
+    left: 176px
 }
 
 #knob-depth {
     position: absolute;
-    top: 5px;
-    left: 111px;
+    top: 60px;
+    left: 310px;
 }
 
 #knob-shape {
     position: absolute;
-    left: 66px;
-    top: 78px;
-}
-
-
-
-#stomp-switch {
-    position: absolute;
-    left: 7px;
-    bottom: 8px;
+    left: 30px;
+    top: 60px;
 }
 
 .led {
@@ -249,11 +247,11 @@ function getHTML()
             <div class="led-reflection"></div>
         </div>
         <div class="controls">
-            <div id="knob-rate" class="big-knob-svg"></div>
-            <div id="knob-depth" class="big-knob-svg"></div>
-            <div id="knob-shape" class="smaller-knob-svg"></div>
+            <div id="knob-rate" class="knob-svg"></div>
+            <div id="knob-depth" class="knob-svg"></div>
+            <div id="knob-shape" class="knob-svg"></div>
         </div>
-        <div id="stomp-switch" class="rectangular-button-svg">
+        <div id="stomp-switch" class="footsw-off">
           
         </div>
     </div>
