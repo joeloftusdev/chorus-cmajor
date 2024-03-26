@@ -30,31 +30,6 @@ graph Chorus [[ main ]]
     }
 }
 
-graph ChorusProcessor (float initialPhase, float pan)
-{
-    input value float rate;
-    input value float depth;
-    input value float shape;
-    
-    input stream float in;
-    output stream float<2> out;
-
-    node   osc = Oscillator(initialPhase);
-    node   panner = StereoPan(pan);
-    node   delay  = Delay;
-
-    connection
-    {        
-    rate  -> osc.rate;
-    depth -> osc.depth;
-    shape -> osc.shape;
-    in -> delay.in;
-    osc.out -> delay.modIn;
-    delay.out -> panner.in;
-    panner.out -> out;
-    }
-}
-
 processor Oscillator (float initialPhase)
 {
     input stream float rate;
@@ -120,5 +95,33 @@ processor Delay
         }
     }
 }
+
+graph ChorusProcessor (float initialPhase, float pan)
+{
+    input value float rate;
+    input value float depth;
+    input value float shape;
+    
+    input stream float in;
+    output stream float<2> out;
+
+    node   osc = Oscillator(initialPhase);
+    node   panner = StereoPan(pan);
+    node   delay  = Delay;
+
+    connection
+    {        
+    rate  -> osc.rate;
+    depth -> osc.depth;
+    shape -> osc.shape;
+    in -> delay.in;
+    osc.out -> delay.modIn;
+    delay.out -> panner.in;
+    panner.out -> out;
+    }
+}
+
+
+
 
 
