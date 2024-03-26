@@ -5,7 +5,7 @@
 
 A stereo chorus effect made with [Cmajor](https://cmajor.dev/) 
 
-## How to Run
+## Run
 
 Examples of how to build & run can be found [here.](https://cmajor.dev/docs/GettingStarted)
 
