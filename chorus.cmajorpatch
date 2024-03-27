@@ -5,13 +5,14 @@
     "name":             "Chorus",
     "description":      "A chorus effect, with a GUI",
     "category":         "effect",
-    "manufacturer":     "JL Dev",
+    "manufacturer":     "Joe Loftus",
+    "website":          "https://joeloftus.net/",
     "isInstrument":     false,
 
     "plugin":
     {
         "manufacturerCode":  "jldev",
-        "pluginCode":        "ce-2"
+        "pluginCode":        "stereo chorus"
     },
 
     "source":           [ "chorus.cmajor" ],

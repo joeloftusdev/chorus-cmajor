@@ -9,7 +9,7 @@ graph Chorus [[ main ]]
     input value float depth [[ name: "Depth", min: 0.0,   max: 20.0,  init: 0.5]];
     input value float shape [[ name: "Shape", min: 0.0,   max: 1.0,    init: 0.0 ]];
 
-    node mix = std::mixers::Interpolator(float<2>, 80.0f);
+    node mix = std::mixers::Interpolator(float<2>, 100.0f);
     node monoToStereo = std::mixers::MonoToStereo(float);
     node chorus1 = ChorusProcessor (0.0f, -1.0f);
     node chorus2 = ChorusProcessor (0.5f,  1.0f);
@@ -71,7 +71,6 @@ processor StereoPan (float pan)
 
 processor Delay 
 {
-   
     input stream float in, modIn;
     output stream float out;
 
