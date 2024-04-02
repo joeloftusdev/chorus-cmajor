@@ -9,4 +9,3 @@ A stereo chorus effect built with [Cmajor](https://cmajor.dev/).
 
 Examples of how to build & run can be found [here.](https://cmajor.dev/docs/GettingStarted)
 
-If you're using VSCode just install the Cmajor extension & you are good to go.
